@@ -5,6 +5,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import connect from './src/db/connect.js';
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use(express.urlencoded({ extended: true }))
 
 const server = async () => {
     try {
+        await connect()
+
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`)
         })
