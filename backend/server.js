@@ -1,6 +1,6 @@
 "use strict"
 /* -------------------------------------------------------
-    NODEJS EXPRESS | Autentication Tutorial
+    NODEJS EXPRESS | Authentication Tutorial
 ------------------------------------------------------- */
 import express from 'express';
 import dotenv from 'dotenv';

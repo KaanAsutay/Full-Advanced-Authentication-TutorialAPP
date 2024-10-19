@@ -1,3 +1,7 @@
+"use strict"
+/* -------------------------------------------------------
+    NODEJS EXPRESS | Authentication Tutorial
+------------------------------------------------------- */
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
