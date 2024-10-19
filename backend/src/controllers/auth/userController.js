@@ -4,6 +4,7 @@
 ------------------------------------------------------- */
 import asyncHandler from "express-async-handler"
 import User from "../../models/auth/UserModel.js";
+import generateToken from "../../helpers/generateToken.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
@@ -36,6 +37,18 @@ export const registerUser = asyncHandler(async (req, res) => {
         password
     })
 
+    // generate token with user id
+    const token = generateToken(user._id)
+
+   // send back the user data and token in the response to the client
+   res.cookie("token", token, {
+    path: "/",
+    httpOnly: true,
+    maxAge: 30 * 24* 60 * 60 * 1000, // 30 days
+    sameSite: true,
+    secure: true
+   })
+
     if(user) {
        const { _id, name, email, role, photo, bio, isVerified } = user;
 
@@ -47,7 +60,8 @@ export const registerUser = asyncHandler(async (req, res) => {
         role,
         photo,
         bio,
-        isVerified
+        isVerified,
+        token
        })
     } else {
         res.status(400).json({ message: "Invalid user data"})
