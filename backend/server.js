@@ -6,6 +6,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connect from './src/db/connect.js';
+import cookieParser from 'cookie-parser';
+import fs from "node:fs";
 
 const app = express();
 
@@ -28,9 +30,21 @@ app.use(cors({
 app.use(express.json())
 
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
+/* ------------------------------------------------------- */
+// Routes:
 
+const routeFiles = fs.readdirSync("./src/routes")
 
+routeFiles.forEach((file) => {
+    // use dynamic import to import the route
+    import(`./src/routes/${file}`).then((route) => {
+        app.use("/api/v1", route.default)
+    }).catch((err) => {
+        console.log("Failed to load route file", err)
+    });
+});
 
 const server = async () => {
     try {
