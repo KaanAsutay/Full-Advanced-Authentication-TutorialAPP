@@ -91,6 +91,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     const isMatch = await bcrypt.compare(password, userExists.password);
 
     if (!isMatch) {
+        // 400 Bad Request
         return res.status(400).json({ message: "Invalid credentials" })
     }
 
