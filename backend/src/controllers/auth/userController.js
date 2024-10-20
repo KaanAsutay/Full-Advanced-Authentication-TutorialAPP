@@ -5,6 +5,7 @@
 import asyncHandler from "express-async-handler"
 import User from "../../models/auth/UserModel.js";
 import generateToken from "../../helpers/generateToken.js";
+import bcrypt from 'bcrypt'
 
 export const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
@@ -65,5 +66,61 @@ export const registerUser = asyncHandler(async (req, res) => {
        })
     } else {
         res.status(400).json({ message: "Invalid user data"})
+    }
+})
+
+// user login
+export const loginUser = asyncHandler(async (req, res) => {
+    // get email and password from req.body
+    const { email, password } = req.body;
+
+    // validation
+    if (!email || !password) {
+        // 400 Bad Request
+        return res.status(400).json({ message: "All fields are required" })
+    }
+
+    // check if user exists
+    const userExists = await User.findOne({ email });
+
+    if (!userExists) {
+        return res.status(400).json({ message: "User not found, sign up!" })
+    }
+
+    // check if the password match the hashed password in the database
+    const isMatch = await bcrypt.compare(password, userExists.password);
+
+    if (!isMatch) {
+        return res.status(400).json({ message: "Invalid credentials" })
+    }
+
+    // generate token with user id
+    const token = generateToken(userExists._id);
+
+    if (userExists && isMatch) {
+        const { _id, name, email, role, photo, bio, isVerified} = userExists;
+
+        // set the tokem in the cookie
+        res.cookie("token", token, {
+            path: "/",
+            httpOnly: true,
+            maxAge: 30 * 24* 60 * 1000, // 30 days
+            sameSite: true,
+            secure: true
+        })
+
+        // send back the user and token in the response to the client
+        res.status(200).json({
+            _id,
+            name,
+            email,
+            role,
+            photo,
+            bio,
+            isVerified,
+            token
+        })
+    } else {
+        res.status(400).json({ message: "Invalid email or password " })
     }
 })
