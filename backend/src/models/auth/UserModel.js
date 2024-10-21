@@ -1,7 +1,3 @@
-"use strict"
-/* -------------------------------------------------------
-    NODEJS EXPRESS | Authentication Tutorial
-------------------------------------------------------- */
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
@@ -29,7 +25,7 @@ const UserSchema = new mongoose.Schema(
 
     photo: {
       type: String,
-      default: "no-photo.jpg",
+      default: "https://avatars.githubusercontent.com/u/19819005?v=4",
     },
 
     bio: {
@@ -52,26 +48,24 @@ const UserSchema = new mongoose.Schema(
 );
 
 // hash the password before saving
-UserSchema.pre("save", async function(next){
+UserSchema.pre("save", async function (next) {
   // check if the password is not modified
-  if (!this.isModified("password")){
+  if (!this.isModified("password")) {
     return next();
   }
-  
-  // hash the password ==> bcrypt
+
+  // hash the password  ==> bcrypt
   // generate salt
   const salt = await bcrypt.genSalt(10);
-
   // hash the password with the salt
   const hashedPassword = await bcrypt.hash(this.password, salt);
-
   // set the password to the hashed password
   this.password = hashedPassword;
 
   // call the next middleware
   next();
-})
+});
 
-const User = mongoose.model('User', UserSchema)
+const User = mongoose.model("User", UserSchema);
 
 export default User;
