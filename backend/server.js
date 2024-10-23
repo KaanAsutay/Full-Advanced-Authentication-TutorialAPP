@@ -8,11 +8,15 @@ import cors from 'cors';
 import connect from './src/db/connect.js';
 import cookieParser from 'cookie-parser';
 import fs from "node:fs";
+import mongoose from 'mongoose';
 
 const app = express();
 
 /* ------------------------------------------------------- */
 // Required Modules:
+
+// strictQuery ayarını yapıyoruz
+mongoose.set('strictQuery', false);  // veya true, tercihinize bağlı
 
 dotenv.config();
 
