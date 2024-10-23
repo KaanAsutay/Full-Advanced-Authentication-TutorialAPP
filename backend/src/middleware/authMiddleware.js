@@ -1,7 +1,3 @@
-"use strict"
-/* -------------------------------------------------------
-    NODEJS EXPRESS | Authentication Tutorial
-------------------------------------------------------- */
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import User from "../models/auth/UserModel.js";
@@ -37,14 +33,37 @@ export const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 // admin middleware
-export const adminMiddleware = asyncHandler(async (req, res) => {
-  if(req.user && req.user.role === "admin") {
+export const adminMiddleware = asyncHandler(async (req, res, next) => {
+  if (req.user && req.user.role === "admin") {
     // if user is admin, move to the next middleware/controller
     next();
     return;
   }
-  // if not admin, send 403 forbidden --> terminate the request
-  res.status(403).json({ message: "Only admins can do this!" })
-})
+  // if not admin, send 403 Forbidden --> terminate the request
+  res.status(403).json({ message: "Only admins can do this!" });
+});
+
+export const creatorMiddleware = asyncHandler(async (req, res, next) => {
+  if (
+    (req.user && req.user.role === "creator") ||
+    (req.user && req.user.role === "admin")
+  ) {
+    // if user is creator, move to the next middleware/controller
+    next();
+    return;
+  }
+  // if not creator, send 403 Forbidden --> terminate the request
+  res.status(403).json({ message: "Only creators can do this!" });
+});
+
+// verified middleware
+export const verifiedMiddleware = asyncHandler(async (req, res, next) => {
+  if (req.user && req.user.isVerified) {
+    // if user is verified, move to the next middleware/controller
+    next();
+    return;
+  }
+  // if not verified, send 403 Forbidden --> terminate the request
+  res.status(403).json({ message: "Please verify your email address!" });
+});
