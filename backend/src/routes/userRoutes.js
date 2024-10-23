@@ -18,4 +18,8 @@ router.patch('/user', protect, updateUser)
 // admin routes
 router.delete("/admin/users/:id", protect, adminMiddleware, deleteUser)
 
+// get all users
+router.get("/users", protect, creatorMiddleware, getAllUsers)
+
+
 export default router;
